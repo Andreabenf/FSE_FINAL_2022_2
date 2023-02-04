@@ -1,0 +1,6 @@
+.vscode/
+.vscode/c_cpp_properties.json
+/client/build/*
+main/CMakeLists.txt
+sdkconfig
+sdkconfig.old
