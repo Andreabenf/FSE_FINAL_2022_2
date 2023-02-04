@@ -22,12 +22,12 @@
 #include "wifi.h"
 
 #include "driver/ledc.h"
+#include "gpio_config.h"
 
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle sendDataMQTTSemaphore;
 
 #define GPIO_DHT CONFIG_ESP_DHT_GPIO_NUMBER
-#define GPIO_LED CONFIG_ESP_LED_GPIO_NUMBER
 #define GPIO_BUTTON CONFIG_ESP_BUTTON_GPIO_NUMBER
 
 char central_path[150], comodo_path[150];
@@ -38,15 +38,6 @@ xQueueHandle filaDeInterrupcao;
 static void IRAM_ATTR gpio_isr_handler(void *args) {
     int pino = (int)args;
     xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
-}
-
-void piscaLed() {
-    for (int blips = 3; blips >= 0; blips--) {
-        gpio_set_level(GPIO_LED, 1);
-        vTaskDelay(400 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_LED, 0);
-        vTaskDelay(400 / portTICK_PERIOD_MS);
-    }
 }
 
 void trataInterrupcaoBotao(void *params) {
@@ -198,6 +189,11 @@ void enviaDadosServidor(void *params) {
         while (true) {
 #ifdef CONFIG_ENERGIA
             float humValue, tempValue;
+            int magDig, magAn;
+
+            magDig= getDigitalMagne();
+            magAn= getAnalogicMagne();
+
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
                                 &tempValue);
 
@@ -214,7 +210,13 @@ void enviaDadosServidor(void *params) {
             mqtt_envia_mensagem(attr_path, cJSON_Print(resHumidity));
             vTaskDelay(50 / portTICK_PERIOD_MS);
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTemperature));
-            vTaskDelay(2000 / portTICK_PERIOD_MS);
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            printf("magDig: %d, magAn: %d\n\n\n",magDig,magAn);
+if(magDig){
+    ledPWM(255);
+}else{
+    ledPWM(0);
+}
 
             cJSON_Delete(resHumidity);
             cJSON_Delete(resTemperature);
@@ -224,55 +226,9 @@ void enviaDadosServidor(void *params) {
 }
 
 void configuraGPIO() {
-    // Configuração dos pinos dos LEDs
-    // gpio_pad_select_gpio(GPIO_LED);
-    // // Configura os pinos dos LEDs como Output
-    // gpio_set_direction(GPIO_LED, GPIO_MODE_OUTPUT);
+    configLedGpio();
 
-    // Configuração do Timer
-    ledc_timer_config_t timer_config = {
-        .speed_mode = LEDC_LOW_SPEED_MODE,
-        .duty_resolution = LEDC_TIMER_8_BIT,
-        .timer_num = LEDC_TIMER_0,
-        .freq_hz = 1000,
-        .clk_cfg = LEDC_AUTO_CLK
-    };
-    ledc_timer_config(&timer_config);
-
-    // Configuração do Canal
-    ledc_channel_config_t channel_config = {
-        .gpio_num = GPIO_LED,
-        .speed_mode = LEDC_LOW_SPEED_MODE,
-        .channel = LEDC_CHANNEL_0,
-        .timer_sel = LEDC_TIMER_0,
-        .duty = 0,
-        .hpoint = 0
-    };
-    ledc_channel_config(&channel_config);
-
-    int32_t intensidade_led = le_int32_nvs("intensidade_led");
-    if (intensidade_led != -1) {
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, intensidade_led);
-        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-    }
-
-    // Configuração do pino do Botão
-    gpio_pad_select_gpio(GPIO_BUTTON);
-    // Configura o pino do Botão como Entrada
-    gpio_set_direction(GPIO_BUTTON, GPIO_MODE_INPUT);
-
-    int32_t estado_saida = le_int32_nvs("estado_saida");
-    gpio_set_level(GPIO_LED, estado_saida);
-
-    // Configura o resistor de Pull-up para o botão (por padrão a entrada
-    // estará em Um)
-    gpio_pullup_en(GPIO_BUTTON);
-
-    // Desabilita o resistor de Pull-down por segurança.
-    gpio_pulldown_dis(GPIO_BUTTON);
-
-    // Configura pino para interrupção
-    gpio_set_intr_type(GPIO_BUTTON, GPIO_INTR_NEGEDGE);
+   configButtonGpio();
 
 #ifdef CONFIG_BATERIA
     // Configura o retorno
