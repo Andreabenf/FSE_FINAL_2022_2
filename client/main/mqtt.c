@@ -76,7 +76,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
 void mqtt_start() {
     esp_mqtt_client_config_t mqtt_config = {
         .uri = "mqtt://164.41.98.25",
-        .username = "IHRDP5R9b02eywqi9b9p"
+        .username = "cUNn5ysSxbGiO0vIaiwQ"
     };
     client = esp_mqtt_client_init(&mqtt_config);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler,
