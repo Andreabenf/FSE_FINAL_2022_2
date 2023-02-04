@@ -4,3 +4,4 @@
 main/CMakeLists.txt
 sdkconfig
 sdkconfig.old
+esp-idf
