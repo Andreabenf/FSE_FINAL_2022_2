@@ -3,7 +3,10 @@
 
 #include <driver/adc.h>
 
-
+void configBuzzerGpio();
+void configTwoColorLedGpio();
+void configSoundSensorGpio();
+void configInclineSensorGpio();
 void configLedGpio();
 void configButtonGpio();
 void piscaLed();

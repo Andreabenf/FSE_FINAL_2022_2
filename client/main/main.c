@@ -35,28 +35,35 @@ char telemetry_path[150], attr_path[150], state_path[150];
 int flag_run = 0;
 xQueueHandle filaDeInterrupcao;
 
-static void IRAM_ATTR gpio_isr_handler(void *args) {
+static void IRAM_ATTR gpio_isr_handler(void *args)
+{
     int pino = (int)args;
     xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
 }
 
-void trataInterrupcaoBotao(void *params) {
+void trataInterrupcaoBotao(void *params)
+{
     int pino;
     int contador = 0;
 
-    while (true) {
-        if (xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY)) {
+    while (true)
+    {
+        if (xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY))
+        {
             int estado = gpio_get_level(pino);
-            if (estado == 0) {
+            if (estado == 0)
+            {
                 gpio_isr_handler_remove(pino);
                 int contadorPressionado = 0;
                 printf("Apertou o botão\n");
-                while (gpio_get_level(pino) == estado) {
+                while (gpio_get_level(pino) == estado)
+                {
                     vTaskDelay(50 / portTICK_PERIOD_MS);
                     contadorPressionado++;
                     printf("Manteve o botão pressionado: %d\n",
                            contadorPressionado);
-                    if (contadorPressionado == 50) {
+                    if (contadorPressionado == 50)
+                    {
                         piscaLed();
                         nvs_flash_erase_partition("DadosNVS");
                         esp_restart();
@@ -82,19 +89,24 @@ void trataInterrupcaoBotao(void *params) {
     }
 }
 
-void conectadoWifi(void *params) {
-    while (true) {
-        if (xSemaphoreTake(conexaoWifiSemaphore, portMAX_DELAY)) {
+void conectadoWifi(void *params)
+{
+    while (true)
+    {
+        if (xSemaphoreTake(conexaoWifiSemaphore, portMAX_DELAY))
+        {
             // Processamento Internet
             mqtt_start();
         }
     }
 }
 
-void definePaths() {
+void definePaths()
+{
     memset(comodo_path, '\0', sizeof comodo_path);
     int result = le_valor_nvs("comodo_path", comodo_path);
-    if (result > 0) {
+    if (result > 0)
+    {
         printf("valor lido da func: %s\n", comodo_path);
     }
     // Define "path" de Umidade
@@ -110,23 +122,28 @@ void definePaths() {
     strcpy(state_path, "v1/devices/me/attributes");
 }
 
-void startSleep() {
+void startSleep()
+{
     // Coloca a ESP no Deep Sleep
     esp_deep_sleep_start();
 }
 
-void trataBotaoPressionadoLowPower() {
+void trataBotaoPressionadoLowPower()
+{
     // Trata segurar botão para reiniciar
     int estado = gpio_get_level(GPIO_BUTTON);
-    if (estado == 0) {
+    if (estado == 0)
+    {
         gpio_isr_handler_remove(GPIO_BUTTON);
         int contadorPressionado = 0;
         printf("Apertou o botão\n");
-        while (gpio_get_level(GPIO_BUTTON) == estado) {
+        while (gpio_get_level(GPIO_BUTTON) == estado)
+        {
             vTaskDelay(50 / portTICK_PERIOD_MS);
             contadorPressionado++;
             printf("Manteve o botão pressionado: %d\n", contadorPressionado);
-            if (contadorPressionado == 50) {
+            if (contadorPressionado == 50)
+            {
                 piscaLed();
                 nvs_flash_erase_partition("DadosNVS");
                 esp_restart();
@@ -140,8 +157,10 @@ void trataBotaoPressionadoLowPower() {
     }
 }
 
-void enviaDadosServidor(void *params) {
-    if (xSemaphoreTake(sendDataMQTTSemaphore, portMAX_DELAY)) {
+void enviaDadosServidor(void *params)
+{
+    if (xSemaphoreTake(sendDataMQTTSemaphore, portMAX_DELAY))
+    {
         // Define os paths
         definePaths();
 
@@ -163,7 +182,8 @@ void enviaDadosServidor(void *params) {
         cJSON_AddItemReferenceToObject(envio_low_json, "estado", estado_json);
 
         // Trata botão pressionado ao acordar
-        if (flag_run) {
+        if (flag_run)
+        {
             printf("O botão foi acionado. Botão: %d\n", GPIO_BUTTON);
             int32_t estado_entrada = le_int32_nvs("estado_entrada");
             estado_entrada = estado_entrada ? 0 : 1;
@@ -171,7 +191,9 @@ void enviaDadosServidor(void *params) {
 
             mqtt_envia_mensagem(state_path, cJSON_Print(envio_low_json));
             vTaskDelay(2000 / portTICK_PERIOD_MS);
-        } else {
+        }
+        else
+        {
             mqtt_envia_mensagem(state_path, cJSON_Print(envio_low_json));
             vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
@@ -186,13 +208,14 @@ void enviaDadosServidor(void *params) {
 #endif
 
         // Loop da task
-        while (true) {
+        while (true)
+        {
 #ifdef CONFIG_ENERGIA
             float humValue, tempValue;
             int magDig, magAn;
 
-            magDig= getDigitalMagne();
-            magAn= getAnalogicMagne();
+            magDig = getDigitalMagne();
+            magAn = getAnalogicMagne();
 
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
                                 &tempValue);
@@ -211,12 +234,15 @@ void enviaDadosServidor(void *params) {
             vTaskDelay(50 / portTICK_PERIOD_MS);
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTemperature));
             vTaskDelay(1000 / portTICK_PERIOD_MS);
-            printf("magDig: %d, magAn: %d\n\n\n",magDig,magAn);
-if(magDig){
-    ledPWM(255);
-}else{
-    ledPWM(0);
-}
+            printf("magDig: %d, magAn: %d\n\n\n", magDig, magAn);
+            if (magDig)
+            {
+                ledPWM(255);
+            }
+            else
+            {
+                ledPWM(0);
+            }
 
             cJSON_Delete(resHumidity);
             cJSON_Delete(resTemperature);
@@ -225,10 +251,18 @@ if(magDig){
     }
 }
 
-void configuraGPIO() {
+void configuraGPIO()
+{
+#ifdef CONFIG_PLACA_1
     configLedGpio();
-
-   configButtonGpio();
+    configButtonGpio();
+#elif CONFIG_PLACA_2
+    configBuzzerGpio();
+    configTwoColorLedGpio();
+#elif CONFIG_PLACA_3
+    configSoundSensorGpio();
+    configInclineSensorGpio();
+#endif
 
 #ifdef CONFIG_BATERIA
     // Configura o retorno
@@ -237,42 +271,51 @@ void configuraGPIO() {
 #endif
 }
 
-void defineCentralPath() {
+void defineCentralPath()
+{
     // Cria e salva o path home
     memset(central_path, '\0', sizeof central_path);
     strcpy(central_path, "v1/devices/me/");
     grava_string_nvs("central_path", central_path);
 }
 
-void defineVariaveisEstado() {
+void defineVariaveisEstado()
+{
     int32_t estado_entrada = le_int32_nvs("estado_entrada");
-    if (estado_entrada == -1) {
+    if (estado_entrada == -1)
+    {
         estado_entrada = 0;
         grava_int32_nvs("estado_entrada", estado_entrada);
     }
 
     int32_t estado_saida = le_int32_nvs("estado_saida");
-    if (estado_saida == -1) {
+    if (estado_saida == -1)
+    {
         estado_saida = 0;
         grava_int32_nvs("estado_saida", estado_saida);
     }
 }
 
-void app_main() {
+void app_main()
+{
     // Inicializa o NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
-        ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
 
     int result = le_valor_nvs("central_path", central_path);
-    if (result == -1) {
+    if (result == -1)
+    {
         defineCentralPath();
         defineVariaveisEstado();
-    } else {
+    }
+    else
+    {
         printf("Path central: %s\n", central_path);
         flag_run = 1;
     }
@@ -295,7 +338,8 @@ void app_main() {
 
     xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 4096, NULL, 1, NULL);
     xTaskCreate(&enviaDadosServidor, "Envio de dados", 4096, NULL, 1, NULL);
-    if (flag_run) {
+    if (flag_run)
+    {
         xSemaphoreGive(sendDataMQTTSemaphore);
     }
 }

@@ -14,7 +14,10 @@
 
 
 
-
+void configBuzzerGpio(){}
+void configTwoColorLedGpio(){}
+void configSoundSensorGpio(){}
+void configInclineSensorGpio(){}
 void ledPWM(int32_t duty){
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, duty);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);

@@ -51,5 +51,19 @@ menu "Configuração Modo de Funcionamento"
                 bool "Habilitar o modo BATERIA (Low Power)"
         endchoice  
 endmenu
+
+menu "Configuração qual placa será utilizada"
+    config PLACA_USADA
+        choice
+            bool "Selecione uma Modo de Funcionamento da ESP"
+                default PLACA_1
+            config PLACA_1
+                bool "PLACA 1 (DHT11, REED-SWITCH (KY-025))"
+            config PLACA_2
+                bool "PLACA 2 (BUZZER, LED 2 COLORS (KY-029))"
+            config PLACA_3
+                bool "PLACA 3 (INCLINAÇÃO (KY-017), SOM (KY-037))"
+        endchoice  
+endmenu
   
 
