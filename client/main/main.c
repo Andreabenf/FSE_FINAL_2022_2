@@ -258,7 +258,7 @@ void configuraGPIO()
     configButtonGpio();
 #elif CONFIG_PLACA_2
     configBuzzerGpio();
-    configTwoColorLedGpio();
+    configSevenColorsLedGpio();
 #elif CONFIG_PLACA_3
     configSoundSensorGpio();
     configInclineSensorGpio();

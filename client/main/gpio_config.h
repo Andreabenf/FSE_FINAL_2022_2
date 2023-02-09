@@ -4,7 +4,7 @@
 #include <driver/adc.h>
 
 void configBuzzerGpio();
-void configTwoColorLedGpio();
+void configSevenColorsLedGpio();
 void configSoundSensorGpio();
 void configInclineSensorGpio();
 void configLedGpio();
