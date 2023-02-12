@@ -4,6 +4,7 @@
 #include <driver/adc.h>
 
 void configBuzzerGpio();
+void ligaBuzzer();
 void configSevenColorsLedGpio();
 void configSoundSensorGpio();
 void configInclineSensorGpio();
