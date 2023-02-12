@@ -11,6 +11,7 @@
 #define GPIO_LED CONFIG_ESP_LED_GPIO_NUMBER
 #define GPIO_BUTTON CONFIG_ESP_BUTTON_GPIO_NUMBER
 #define GPIO_DIGITAL_MAGNET 15
+#define GPIO_TILT 3
 #define GPIO_LED_SEVEN 4
 
 void configBuzzerGpio() {}
@@ -96,9 +97,20 @@ void configKy025()
     gpio_set_direction(GPIO_DIGITAL_MAGNET, GPIO_MODE_INPUT);
 }
 
+void configTilt()
+{
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_0);
+}
+
 int getAnalogicMagne()
 {
     return adc1_get_raw(ADC1_CHANNEL_0);
+}
+
+int getAnalogicTilt()
+{
+    return adc1_get_raw(ADC1_CHANNEL_3);
 }
 
 int getDigitalMagne()
