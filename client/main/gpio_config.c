@@ -11,6 +11,7 @@
 #define GPIO_LED CONFIG_ESP_LED_GPIO_NUMBER
 #define GPIO_BUTTON CONFIG_ESP_BUTTON_GPIO_NUMBER
 #define GPIO_DIGITAL_MAGNET 15
+#define GPIO_DIGITAL_SOUND 23
 #define GPIO_TILT 3
 #define GPIO_LED_SEVEN 4
 
@@ -103,6 +104,18 @@ void configTilt()
     adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_0);
 }
 
+void configDigitalDetection()
+{
+    gpio_pad_select_gpio(GPIO_DIGITAL_SOUND);
+    gpio_set_direction(GPIO_DIGITAL_SOUND, GPIO_MODE_INPUT);
+}
+
+void configAnalogDetection()
+{
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11);
+}
+
 int getAnalogicMagne()
 {
     return adc1_get_raw(ADC1_CHANNEL_0);
@@ -111,6 +124,16 @@ int getAnalogicMagne()
 int getAnalogicTilt()
 {
     return adc1_get_raw(ADC1_CHANNEL_3);
+}
+
+int getAnalogicSound()
+{
+    return adc1_get_raw(ADC1_CHANNEL_6);
+}
+
+int getDigitalSound()
+{
+    return gpio_get_level(GPIO_DIGITAL_SOUND);
 }
 
 int getDigitalMagne()
