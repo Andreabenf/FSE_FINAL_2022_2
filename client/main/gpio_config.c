@@ -14,8 +14,42 @@
 #define GPIO_DIGITAL_SOUND 23
 #define GPIO_TILT 3
 #define GPIO_LED_SEVEN 4
+#define GPIO_BUZZER 15
+#define BUZZER_GPIO GPIO_NUM_4
+#define NOTE_F3 174
+#define NOTE_G3 196
+#define NOTE_A3 220
+#define NOTE_A3S 233
+#define NOTE_B3 247
+#define NOTE_C4 262
+#define NOTE_C4S 277
+#define NOTE_D4 294
+#define NOTE_D4S 311
+#define NOTE_E4 330
+#define NOTE_F4 349
+#define NOTE_F4S 370
+#define NOTE_G4 392
+#define NOTE_G4S 415
+#define NOTE_A4 440
+#define NOTE_B4 494
+#define NOTE_C5 523
+#define NOTE_D5 587
 
-void configBuzzerGpio() {}
+void play_note(int note, int duration) {
+  int half_period = 1000000 / (2 * note);
+  for (int i = 0; i < (duration * 1000 + half_period) / (2 * half_period); i++) {
+    gpio_set_level(BUZZER_GPIO, 1);
+    ets_delay_us(half_period);
+    gpio_set_level(BUZZER_GPIO, 0);
+    ets_delay_us(half_period);
+  }
+}
+
+void configBuzzerGpio() {
+  gpio_pad_select_gpio(GPIO_BUZZER);
+    gpio_set_direction(GPIO_BUZZER, GPIO_MODE_OUTPUT);
+}
+
 
 void SetSevenColorsLed(int state)
 {
@@ -139,4 +173,50 @@ int getDigitalSound()
 int getDigitalMagne()
 {
     return gpio_get_level(GPIO_DIGITAL_MAGNET);
+}
+
+void play_music() {
+  gpio_set_direction(BUZZER_GPIO, GPIO_MODE_OUTPUT);
+  play_note(NOTE_C4, 500);
+  play_note(NOTE_C4, 500);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_A4, 500);
+  play_note(NOTE_A4, 500);
+  play_note(NOTE_G4, 1000);
+  play_note(NOTE_F4, 500);
+  play_note(NOTE_F4, 500);
+  play_note(NOTE_E4, 500);
+  play_note(NOTE_E4, 500);
+  play_note(NOTE_D4, 500);
+  play_note(NOTE_D4, 500);
+  play_note(NOTE_C4, 1000);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_F4, 500);
+  play_note(NOTE_F4, 500);
+  play_note(NOTE_E4, 500);
+  play_note(NOTE_E4, 500);
+  play_note(NOTE_D4, 1000);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_F4, 500);
+  play_note(NOTE_F4, 500);
+  play_note(NOTE_E4, 500);
+  play_note(NOTE_E4, 500);
+  play_note(NOTE_D4, 1000);
+  play_note(NOTE_C4, 500);
+  play_note(NOTE_C4, 500);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_G4, 500);
+  play_note(NOTE_A4, 500);
+  play_note(NOTE_A4, 500);
+  play_note(NOTE_G4, 1000);
+play_note(NOTE_F4, 500);
+play_note(NOTE_F4, 500);
+play_note(NOTE_E4, 500);
+play_note(NOTE_E4, 500);
+play_note(NOTE_D4, 500);
+play_note(NOTE_D4, 500);
+play_note(NOTE_C4, 1000);
 }
