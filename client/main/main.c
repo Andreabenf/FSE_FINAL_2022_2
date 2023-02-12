@@ -212,12 +212,14 @@ void enviaDadosServidor(void *params)
         {
 #ifdef CONFIG_ENERGIA
             float humValue, tempValue;
-            int magDig, magAn, tilt;
+            int magDig, magAn, tilt, sound, soundAnalog;
 
             magDig = getDigitalMagne();
             magAn = getAnalogicMagne();
             tilt = getAnalogicTilt();
-            
+            sound = getDigitalSound();
+            soundAnalog = getAnalogicSound();
+
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
                                 &tempValue);
 
@@ -237,6 +239,15 @@ void enviaDadosServidor(void *params)
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             printf("magDig: %d, magAn: %d\n\n\n", magDig, magAn);
             printf("Tilt: %d\n\n\n", tilt);
+            printf("SoundAnalog: %d\n\n\n", soundAnalog);
+            if (sound)
+            {
+                printf("Som detectado\n\n\n");
+            }
+            else
+            {
+                printf("Nenhum Som detectado\n\n\n");
+            }
             if (magDig)
             {
                 ledPWM(255);
@@ -262,8 +273,9 @@ void configuraGPIO()
     configBuzzerGpio();
     configSevenColorsLedGpio();
 #elif CONFIG_PLACA_3
-    configSoundSensorGpio();
     configTilt();
+    configAnalogDetection();
+    configDigitalDetection();
 #endif
 
 #ifdef CONFIG_BATERIA
