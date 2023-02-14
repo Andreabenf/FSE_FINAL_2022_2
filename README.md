@@ -65,5 +65,4 @@ Dashboard criado representando a telemetria e estados dos atributos.    |  Sim  
 | Correta detecção e envio do estado da entrada ao servidor central sendo acordado somente no acionamento da GPIO em modo low power. | Sim | Pull-up do botão |
 | Armazenamento do estado dos atributos na NVS. | Sim | Feito |
 | Correta implementação de comunicação entre os dispositivos (MQTT e Json). | Sim | Feito |
-| Implementação de mecanismo de fácil acesso para que o usuário possa fazer cadastrar as credenciais do Wifi na ESP32. | Sim |Feito | 
-| Suporte à OTA na ESP32. | Não |Feito |
+| Implementação de mecanismo de fácil acesso para que o usuário possa fazer cadastrar as credenciais do Wifi na ESP32. | Sim |Feito |
