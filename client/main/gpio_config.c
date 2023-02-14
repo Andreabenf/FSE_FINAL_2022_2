@@ -45,6 +45,7 @@ void play_note(int note, int duration) {
   }
 }
 
+
 void configBuzzerGpio()
 {
     gpio_pad_select_gpio(GPIO_BUZZER);
@@ -57,10 +58,70 @@ void SetSevenColorsLed(int state)
     gpio_set_level(GPIO_LED_SEVEN, state);
 }
 
+void play_music()
+{
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_G4, 1000);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_C4, 1000);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 1000);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 1000);
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_G4, 1000);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_C4, 1000);
+}
+
+void partyMode(int onoff){
+    if(onoff){
+        SetSevenColorsLed(1);
+        play_music();
+    }
+    else{
+        SetSevenColorsLed(0);
+    }
+}
+
 void configSevenColorsLedGpio()
 {
     gpio_pad_select_gpio(GPIO_LED_SEVEN);
     gpio_set_direction(GPIO_LED_SEVEN, GPIO_MODE_OUTPUT);
+    int32_t modofesta = le_int32_nvs("modo_festa");
+    if (modofesta != -1){
+        partyMode(modofesta);
+    }
 }
 void configSoundSensorGpio() {}
 void configInclineSensorGpio() {}
@@ -88,6 +149,7 @@ void configLedGpio()
         .duty = 0,
         .hpoint = 0};
     ledc_channel_config(&channel_config);
+
 
     int32_t intensidade_led = le_int32_nvs("intensidade_led");
     if (intensidade_led != -1)
@@ -168,53 +230,3 @@ int getDigitalMagne()
     return gpio_get_level(GPIO_DIGITAL_MAGNET);
 }
 
-void play_music()
-{
-    play_note(NOTE_C4, 500);
-    play_note(NOTE_C4, 500);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_A4, 500);
-    play_note(NOTE_A4, 500);
-    play_note(NOTE_G4, 1000);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_D4, 500);
-    play_note(NOTE_D4, 500);
-    play_note(NOTE_C4, 1000);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_D4, 1000);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_D4, 1000);
-    play_note(NOTE_C4, 500);
-    play_note(NOTE_C4, 500);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_G4, 500);
-    play_note(NOTE_A4, 500);
-    play_note(NOTE_A4, 500);
-    play_note(NOTE_G4, 1000);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_F4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_E4, 500);
-    play_note(NOTE_D4, 500);
-    play_note(NOTE_D4, 500);
-    play_note(NOTE_C4, 1000);
-}
-
-void partyMode(){
-    SetSevenColorsLed(1);
-    play_music();
-}
