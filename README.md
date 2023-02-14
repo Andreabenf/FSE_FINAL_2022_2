@@ -21,4 +21,33 @@ Wictor Bastos Girardi | 170047326 | wictorGirardi
 - Buzzer
 - Sensor de som 
 - Sensor de efeito hall
-- Sensor de rotação
+- Sensor de reed switch
+
+## Execução
+Para execução do projeto para seguir esses passos :
+
+- Clone o projeto
+```
+git clone https://github.com/Andreabenf/FSE_2022_2_TRAB2
+```
+
+- Entre na pasta raiz do projeto
+```
+cd FSE_2022_2_TRAB2
+```
+- Exporte, configure e builde a biblioteca idf
+```
+. ../esp-idf/export.sh
+idf.py menuconfig
+idf.py build fullclean
+```
+
+- Para transpor o código para placa execute 
+```
+idf.py -p /dev/tty.usbserial-0001 flash monitor
+```
+obs : Nesse passo o nome do dispositivo após o /dev/ pode variar
+
+### Modo Low Power
+
+- Para acionamento do modo de baixo consumo de energia, é necessário entrar na config e ativar o modo
