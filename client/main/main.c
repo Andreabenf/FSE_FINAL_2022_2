@@ -212,11 +212,15 @@ void enviaDadosServidor(void *params)
         {
 #ifdef CONFIG_ENERGIA
             float humValue, tempValue;
-            int magDig, magAn;
+            int magDig, magAn, tilt, sound;
+     
 
+            sound = getSound();
             magDig = getDigitalMagne();
             magAn = getAnalogicMagne();
-
+            tilt = getAnalogicTilt();
+            //soundAnalog = getAnalogicSound();
+        
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
                                 &tempValue);
 
@@ -235,6 +239,10 @@ void enviaDadosServidor(void *params)
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTemperature));
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             printf("magDig: %d, magAn: %d\n\n\n", magDig, magAn);
+            printf("Tilt: %d\n\n\n", tilt);
+            printf("Sound: %d\n\n\n", sound);
+            //printf("SoundAnalog: %d\n\n\n", soundAnalog);
+        
             if (magDig)
             {
                 ledPWM(255);
@@ -260,8 +268,8 @@ void configuraGPIO()
     configBuzzerGpio();
     configSevenColorsLedGpio();
 #elif CONFIG_PLACA_3
-    configSoundSensorGpio();
-    configInclineSensorGpio();
+ configTilt();
+  configAnalogDetection();
 #endif
 
 #ifdef CONFIG_BATERIA

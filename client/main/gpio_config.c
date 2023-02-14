@@ -11,9 +11,11 @@
 #define GPIO_LED CONFIG_ESP_LED_GPIO_NUMBER
 #define GPIO_BUTTON CONFIG_ESP_BUTTON_GPIO_NUMBER
 #define GPIO_DIGITAL_MAGNET 15
-#define GPIO_LED_SEVEN 4
+#define GPIO_TILT 3
+#define GPIO_LED_SEVEN 5
 #define GPIO_BUZZER 15
 #define BUZZER_GPIO GPIO_NUM_4
+#define GPIO_SOUND 4
 #define NOTE_F3 174
 #define NOTE_G3 196
 #define NOTE_A3 220
@@ -33,21 +35,23 @@
 #define NOTE_C5 523
 #define NOTE_D5 587
 
-void play_note(int note, int duration) {
-  int half_period = 1000000 / (2 * note);
-  for (int i = 0; i < (duration * 1000 + half_period) / (2 * half_period); i++) {
-    gpio_set_level(BUZZER_GPIO, 1);
-    ets_delay_us(half_period);
-    gpio_set_level(BUZZER_GPIO, 0);
-    ets_delay_us(half_period);
-  }
+void play_note(int note, int duration)
+{
+    int half_period = 1000000 / (2 * note);
+    for (int i = 0; i < (duration * 1000 + half_period) / (2 * half_period); i++)
+    {
+        gpio_set_level(BUZZER_GPIO, 1);
+        ets_delay_us(half_period);
+        gpio_set_level(BUZZER_GPIO, 0);
+        ets_delay_us(half_period);
+    }
 }
 
-void configBuzzerGpio() {
-  gpio_pad_select_gpio(GPIO_BUZZER);
+void configBuzzerGpio()
+{
+    gpio_pad_select_gpio(GPIO_BUZZER);
     gpio_set_direction(GPIO_BUZZER, GPIO_MODE_OUTPUT);
 }
-
 
 void SetSevenColorsLed(int state)
 {
@@ -130,7 +134,32 @@ void configKy025()
     gpio_set_direction(GPIO_DIGITAL_MAGNET, GPIO_MODE_INPUT);
 }
 
+void configTilt()
+{
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_0);
+}
+
+void configAnalogDetection()
+{
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_0);
+
+    gpio_pad_select_gpio(GPIO_DIGITAL_MAGNET);
+    gpio_set_direction(GPIO_DIGITAL_MAGNET, GPIO_MODE_INPUT);
+}
+
 int getAnalogicMagne()
+{
+    return adc1_get_raw(ADC1_CHANNEL_0);
+}
+
+int getAnalogicTilt()
+{
+    return adc1_get_raw(ADC1_CHANNEL_3);
+}
+
+int getSound()
 {
     return adc1_get_raw(ADC1_CHANNEL_0);
 }
@@ -140,48 +169,49 @@ int getDigitalMagne()
     return gpio_get_level(GPIO_DIGITAL_MAGNET);
 }
 
-void play_music() {
-  gpio_set_direction(BUZZER_GPIO, GPIO_MODE_OUTPUT);
-  play_note(NOTE_C4, 500);
-  play_note(NOTE_C4, 500);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_A4, 500);
-  play_note(NOTE_A4, 500);
-  play_note(NOTE_G4, 1000);
-  play_note(NOTE_F4, 500);
-  play_note(NOTE_F4, 500);
-  play_note(NOTE_E4, 500);
-  play_note(NOTE_E4, 500);
-  play_note(NOTE_D4, 500);
-  play_note(NOTE_D4, 500);
-  play_note(NOTE_C4, 1000);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_F4, 500);
-  play_note(NOTE_F4, 500);
-  play_note(NOTE_E4, 500);
-  play_note(NOTE_E4, 500);
-  play_note(NOTE_D4, 1000);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_F4, 500);
-  play_note(NOTE_F4, 500);
-  play_note(NOTE_E4, 500);
-  play_note(NOTE_E4, 500);
-  play_note(NOTE_D4, 1000);
-  play_note(NOTE_C4, 500);
-  play_note(NOTE_C4, 500);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_G4, 500);
-  play_note(NOTE_A4, 500);
-  play_note(NOTE_A4, 500);
-  play_note(NOTE_G4, 1000);
-play_note(NOTE_F4, 500);
-play_note(NOTE_F4, 500);
-play_note(NOTE_E4, 500);
-play_note(NOTE_E4, 500);
-play_note(NOTE_D4, 500);
-play_note(NOTE_D4, 500);
-play_note(NOTE_C4, 1000);
+void play_music()
+{
+    gpio_set_direction(BUZZER_GPIO, GPIO_MODE_OUTPUT);
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_G4, 1000);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_C4, 1000);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 1000);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 1000);
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_C4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_G4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_A4, 500);
+    play_note(NOTE_G4, 1000);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_F4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_E4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_D4, 500);
+    play_note(NOTE_C4, 1000);
 }
