@@ -246,31 +246,44 @@ void enviaDadosServidor(void *params)
             cJSON_Delete(resMag);
 #elif CONFIG_PLACA_3
             int tilt, sound;
-     
 
             sound = getSound();
             tilt = getAnalogicTilt();
-            //soundAnalog = getAnalogicSound();
-        
-            cJSON *tiltData = cJSON_CreateNumber(tilt);
+            // soundAnalog = getAnalogicSound();
+            if (tilt == 4095)
+            {
+                cJSON *tiltData = cJSON_CreateString("Horizontal");
+                cJSON *resTilt = cJSON_CreateObject();
+                cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
+                mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTilt));
+                vTaskDelay(50 / portTICK_PERIOD_MS);
+                cJSON_Delete(resTilt);
+            }
+            else
+            {
+                cJSON *tiltData = cJSON_CreateString("Vertical");
+                cJSON *resTilt = cJSON_CreateObject();
+                cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
+                mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTilt));
+                vTaskDelay(50 / portTICK_PERIOD_MS);
+                cJSON_Delete(resTilt);
+            }
+
             cJSON *soundData = cJSON_CreateNumber(sound);
 
-            cJSON *resTilt = cJSON_CreateObject();
             cJSON *resSound = cJSON_CreateObject();
 
-            cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
             cJSON_AddItemReferenceToObject(resSound, "sound", soundData);
 
-            mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTilt));
+         
             vTaskDelay(50 / portTICK_PERIOD_MS);
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resSound));
-            
+
             printf("Tilt: %d\n\n\n", tilt);
             printf("Sound: %d\n\n\n", sound);
-            //printf("SoundAnalog: %d\n\n\n", soundAnalog);
-        
+            // printf("SoundAnalog: %d\n\n\n", soundAnalog);
 
-            cJSON_Delete(resTilt);
+        
             cJSON_Delete(resSound);
 #endif
 #endif
@@ -287,8 +300,8 @@ void configuraGPIO()
     configBuzzerGpio();
     configSevenColorsLedGpio();
 #elif CONFIG_PLACA_3
- configTilt();
-  configAnalogDetection();
+    configTilt();
+    configAnalogDetection();
 #endif
 
 #ifdef CONFIG_BATERIA
@@ -362,11 +375,11 @@ void app_main()
     gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler, (void *)GPIO_BUTTON);
 
     xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 4096, NULL, 1, NULL);
-    #ifdef CONFIG_PLACA_1
+#ifdef CONFIG_PLACA_1
     xTaskCreate(&enviaDadosServidor, "Envio de dados", 4096, NULL, 1, NULL);
-    #elif CONFIG_PLACA_3
+#elif CONFIG_PLACA_3
     xTaskCreate(&enviaDadosServidor, "Envio de dados", 4096, NULL, 1, NULL);
-    #endif
+#endif
     if (flag_run)
     {
         xSemaphoreGive(sendDataMQTTSemaphore);
