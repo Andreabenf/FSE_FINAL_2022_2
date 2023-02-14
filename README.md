@@ -51,3 +51,19 @@ obs : Nesse passo o nome do dispositivo após o /dev/ pode variar
 ### Modo Low Power
 
 - Para acionamento do modo de baixo consumo de energia, é necessário entrar na config e ativar o modo
+
+# Requisitos :
+
+| Requisito | Feito ? | Como fazer |
+| -------- | -------- | -------- |
+| 
+Dashboard criado representando a telemetria e estados dos atributos.    |  Sim    | Feito   |
+| Mecanismo RPC para acionamento remoto de atributos dos dispositivos distribuídos. | Sim | Feito|
+| Correto acionamento e envio do estado da saída de acordo com os comandos RPC do Dashboard (incluíndo o acionamento em modo PWM). | Sim | Feito|
+|  Correta detecção e envio do estado da entrada ao servidor central. | Sim | Feito |
+| Correta operação da placa em modo low power economizando energia. | Sim | Inicialização com a flag específica |
+| Correta detecção e envio do estado da entrada ao servidor central sendo acordado somente no acionamento da GPIO em modo low power. | Sim | Pull-up do botão |
+| Armazenamento do estado dos atributos na NVS. | Sim | Feito |
+| Correta implementação de comunicação entre os dispositivos (MQTT e Json). | Sim | Feito |
+| Implementação de mecanismo de fácil acesso para que o usuário possa fazer cadastrar as credenciais do Wifi na ESP32. | Sim |Feito | 
+| Suporte à OTA na ESP32. | Não |Feito |
