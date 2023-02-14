@@ -14,7 +14,6 @@
 #define GPIO_TILT 3
 #define GPIO_LED_SEVEN 5
 #define GPIO_BUZZER 15
-#define BUZZER_GPIO GPIO_NUM_4
 #define GPIO_SOUND 4
 #define NOTE_F3 174
 #define NOTE_G3 196
@@ -35,16 +34,15 @@
 #define NOTE_C5 523
 #define NOTE_D5 587
 
-void play_note(int note, int duration)
-{
-    int half_period = 1000000 / (2 * note);
-    for (int i = 0; i < (duration * 1000 + half_period) / (2 * half_period); i++)
-    {
-        gpio_set_level(BUZZER_GPIO, 1);
-        ets_delay_us(half_period);
-        gpio_set_level(BUZZER_GPIO, 0);
-        ets_delay_us(half_period);
-    }
+
+void play_note(int note, int duration) {
+  int half_period = 1000000 /  note;
+  for (int i = 0; i < (duration * 1000 + half_period) / (2 * half_period); i++) {
+    gpio_set_level(GPIO_BUZZER, 1);
+    ets_delay_us(half_period);
+    gpio_set_level(GPIO_BUZZER, 0);
+    ets_delay_us(half_period);
+  }
 }
 
 void configBuzzerGpio()
@@ -55,6 +53,7 @@ void configBuzzerGpio()
 
 void SetSevenColorsLed(int state)
 {
+    printf("Deveria ligar o led");
     gpio_set_level(GPIO_LED_SEVEN, state);
 }
 
@@ -171,7 +170,6 @@ int getDigitalMagne()
 
 void play_music()
 {
-    gpio_set_direction(BUZZER_GPIO, GPIO_MODE_OUTPUT);
     play_note(NOTE_C4, 500);
     play_note(NOTE_C4, 500);
     play_note(NOTE_G4, 500);
@@ -214,4 +212,9 @@ void play_music()
     play_note(NOTE_D4, 500);
     play_note(NOTE_D4, 500);
     play_note(NOTE_C4, 1000);
+}
+
+void partyMode(){
+    SetSevenColorsLed(1);
+    play_music();
 }

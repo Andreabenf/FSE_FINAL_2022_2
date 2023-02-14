@@ -20,4 +20,6 @@ int getAnalogicTilt();
 int getDigitalMagne();
 void ledPWM(int32_t duty);
 void configKy025();
+void partyMode();
+void play_music();
 #endif

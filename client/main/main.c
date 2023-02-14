@@ -211,59 +211,68 @@ void enviaDadosServidor(void *params)
         while (true)
         {
 #ifdef CONFIG_ENERGIA
-            float humValue, tempValue;
-            int magDig, magAn, tilt, sound;
-     
 
-            sound = getSound();
+#ifdef CONFIG_PLACA_1
+            float humValue, tempValue;
+            int magDig, magAn;
             magDig = getDigitalMagne();
             magAn = getAnalogicMagne();
-            tilt = getAnalogicTilt();
-            //soundAnalog = getAnalogicSound();
-        
             dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
                                 &tempValue);
 
             cJSON *humidity = cJSON_CreateNumber(humValue);
             cJSON *temperature = cJSON_CreateNumber(tempValue);
-            cJSON *tiltData = cJSON_CreateNumber(tilt);
-            cJSON *soundData = cJSON_CreateNumber(sound);
+            cJSON *magnet = cJSON_CreateNumber(magDig);
 
             cJSON *resHumidity = cJSON_CreateObject();
             cJSON *resTemperature = cJSON_CreateObject();
-            cJSON *resTilt = cJSON_CreateObject();
-            cJSON *resSound = cJSON_CreateObject();
-
+            cJSON *resMag = cJSON_CreateObject();
             cJSON_AddItemReferenceToObject(resHumidity, "umidade", humidity);
             cJSON_AddItemReferenceToObject(resTemperature, "temperatura",
                                            temperature);
-            cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
-            cJSON_AddItemReferenceToObject(resSound, "sound", soundData);
+            cJSON_AddItemReferenceToObject(resMag, "magnetismo", magnet);
 
             mqtt_envia_mensagem(attr_path, cJSON_Print(resHumidity));
             vTaskDelay(50 / portTICK_PERIOD_MS);
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTemperature));
             vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(attr_path, cJSON_Print(resMag));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(attr_path, cJSON_Print(resHumidity));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            printf("magDig: %d, magAn: %d\n\n\n", magDig, magAn);
+            cJSON_Delete(resHumidity);
+            cJSON_Delete(resTemperature);
+            cJSON_Delete(resMag);
+#elif CONFIG_PLACA_3
+            int tilt, sound;
+     
+
+            sound = getSound();
+            tilt = getAnalogicTilt();
+            //soundAnalog = getAnalogicSound();
+        
+            cJSON *tiltData = cJSON_CreateNumber(tilt);
+            cJSON *soundData = cJSON_CreateNumber(sound);
+
+            cJSON *resTilt = cJSON_CreateObject();
+            cJSON *resSound = cJSON_CreateObject();
+
+            cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
+            cJSON_AddItemReferenceToObject(resSound, "sound", soundData);
+
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTilt));
             vTaskDelay(50 / portTICK_PERIOD_MS);
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resSound));
             
-            printf("magDig: %d, magAn: %d\n\n\n", magDig, magAn);
             printf("Tilt: %d\n\n\n", tilt);
             printf("Sound: %d\n\n\n", sound);
             //printf("SoundAnalog: %d\n\n\n", soundAnalog);
         
-            if (magDig)
-            {
-                ledPWM(255);
-            }
-            else
-            {
-                ledPWM(0);
-            }
 
-            cJSON_Delete(resHumidity);
-            cJSON_Delete(resTemperature);
+            cJSON_Delete(resTilt);
+            cJSON_Delete(resSound);
+#endif
 #endif
         }
     }
@@ -338,9 +347,7 @@ void app_main()
         flag_run = 1;
     }
 
-    // Configura GPIO
     configuraGPIO();
-
     // Inicializa semáforos
     conexaoWifiSemaphore = xSemaphoreCreateBinary();
     sendDataMQTTSemaphore = xSemaphoreCreateBinary();
@@ -355,7 +362,11 @@ void app_main()
     gpio_isr_handler_add(GPIO_BUTTON, gpio_isr_handler, (void *)GPIO_BUTTON);
 
     xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 4096, NULL, 1, NULL);
+    #ifdef CONFIG_PLACA_1
     xTaskCreate(&enviaDadosServidor, "Envio de dados", 4096, NULL, 1, NULL);
+    #elif CONFIG_PLACA_3
+    xTaskCreate(&enviaDadosServidor, "Envio de dados", 4096, NULL, 1, NULL);
+    #endif
     if (flag_run)
     {
         xSemaphoreGive(sendDataMQTTSemaphore);
