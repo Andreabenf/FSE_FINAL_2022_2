@@ -64,7 +64,7 @@ void trataInterrupcaoBotao(void *params)
                            contadorPressionado);
                     if (contadorPressionado == 50)
                     {
-                        piscaLed();
+                        ledPWM(20);
                         nvs_flash_erase_partition("DadosNVS");
                         esp_restart();
                         break;
@@ -168,19 +168,77 @@ void enviaDadosServidor(void *params)
         // Trata Botão pressionadoCONFIG_BATERIA
         trataBotaoPressionadoLowPower();
 
-        cJSON *envio_low_json = cJSON_CreateObject();
-        cJSON *estado_json = cJSON_CreateObject();
+            #ifdef CONFIG_PLACA_1
+            float humValue, tempValue;
+            int magDig, magAn;
+            magDig = getDigitalMagne();
+            magAn = getAnalogicMagne();
+            dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue,
+                                &tempValue);
 
-        float humValue, tempValue;
-        dht_read_float_data(DHT_TYPE_DHT11, GPIO_DHT, &humValue, &tempValue);
+            cJSON *humidity = cJSON_CreateNumber(humValue);
+            cJSON *temperature = cJSON_CreateNumber(tempValue);
+            cJSON *magnet = cJSON_CreateNumber(magDig);
 
-        cJSON *humidity = cJSON_CreateNumber(humValue);
-        cJSON *temperature = cJSON_CreateNumber(tempValue);
+            cJSON *resHumidity = cJSON_CreateObject();
+            cJSON *resTemperature = cJSON_CreateObject();
+            cJSON *resMag = cJSON_CreateObject();
+            cJSON_AddItemReferenceToObject(resHumidity, "umidade", humidity);
+            cJSON_AddItemReferenceToObject(resTemperature, "temperatura",
+                                           temperature);
+            cJSON_AddItemReferenceToObject(resMag, "magnetismo", magnet);
+            mqtt_envia_mensagem(attr_path, cJSON_Print(resHumidity));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTemperature));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(attr_path, cJSON_Print(resMag));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(attr_path, cJSON_Print(resHumidity));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            printf("magDig: %d, magAn: %d\n\n\n", magDig, magAn);
+            cJSON_Delete(resHumidity);
+            cJSON_Delete(resTemperature);
+            cJSON_Delete(resMag);
+            #elif CONFIG_PLACA_3
+            int tilt, sound;
 
-        cJSON_AddItemReferenceToObject(estado_json, "umidade", humidity);
-        cJSON_AddItemReferenceToObject(estado_json, "temperatura", temperature);
-        cJSON_AddItemReferenceToObject(envio_low_json, "estado", estado_json);
+            sound = getSound();
+            tilt = getAnalogicTilt();
+            // soundAnalog = getAnalogicSound();
+            if (tilt == 4095)
+            {
+                cJSON *tiltData = cJSON_CreateString("Horizontal");
+                cJSON *resTilt = cJSON_CreateObject();
+                cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
+                mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTilt));
+                vTaskDelay(50 / portTICK_PERIOD_MS);
+                cJSON_Delete(resTilt);
+            }
+            else
+            {
+                cJSON *tiltData = cJSON_CreateString("Vertical");
+                cJSON *resTilt = cJSON_CreateObject();
+                cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
+                mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTilt));
+                vTaskDelay(50 / portTICK_PERIOD_MS);
+                cJSON_Delete(resTilt);
+            }
 
+            cJSON *soundData = cJSON_CreateNumber(sound);
+
+            cJSON *resSound = cJSON_CreateObject();
+
+            cJSON_AddItemReferenceToObject(resSound, "sound", soundData);
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(telemetry_path, cJSON_Print(resSound));
+
+            printf("Tilt: %d\n\n\n", tilt);
+            printf("Sound: %d\n\n\n", sound);
+            // printf("SoundAnalog: %d\n\n\n", soundAnalog);
+
+        
+            cJSON_Delete(resSound);
+        #endif
         // Trata botão pressionado ao acordar
         if (flag_run)
         {
@@ -189,17 +247,12 @@ void enviaDadosServidor(void *params)
             estado_entrada = estado_entrada ? 0 : 1;
             grava_int32_nvs("estado_entrada", estado_entrada);
 
-            mqtt_envia_mensagem(state_path, cJSON_Print(envio_low_json));
             vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
         else
         {
-            mqtt_envia_mensagem(state_path, cJSON_Print(envio_low_json));
             vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
-
-        cJSON_Delete(estado_json);
-        cJSON_Delete(envio_low_json);
 
         printf("Entrando em modo sleep...\n");
         startSleep();
