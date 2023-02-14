@@ -90,7 +90,7 @@ void mqtt_start()
 #elif CONFIG_PLACA_3
     esp_mqtt_client_config_t mqtt_config = {
         .uri = "mqtt://164.41.98.25",
-        .username = "XDJBSU5cJK2veAQrUc5y"};
+        .username = "yDVGkx4DGG6AjncWEtuy"};
 #endif
     client = esp_mqtt_client_init(&mqtt_config);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler,

@@ -226,18 +226,28 @@ void enviaDadosServidor(void *params)
 
             cJSON *humidity = cJSON_CreateNumber(humValue);
             cJSON *temperature = cJSON_CreateNumber(tempValue);
+            cJSON *tiltData = cJSON_CreateNumber(tilt);
+            cJSON *soundData = cJSON_CreateNumber(sound);
 
             cJSON *resHumidity = cJSON_CreateObject();
             cJSON *resTemperature = cJSON_CreateObject();
+            cJSON *resTilt = cJSON_CreateObject();
+            cJSON *resSound = cJSON_CreateObject();
 
             cJSON_AddItemReferenceToObject(resHumidity, "umidade", humidity);
             cJSON_AddItemReferenceToObject(resTemperature, "temperatura",
                                            temperature);
+            cJSON_AddItemReferenceToObject(resTilt, "tilt", tiltData);
+            cJSON_AddItemReferenceToObject(resSound, "sound", soundData);
 
             mqtt_envia_mensagem(attr_path, cJSON_Print(resHumidity));
             vTaskDelay(50 / portTICK_PERIOD_MS);
             mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTemperature));
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(telemetry_path, cJSON_Print(resTilt));
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            mqtt_envia_mensagem(telemetry_path, cJSON_Print(resSound));
+            
             printf("magDig: %d, magAn: %d\n\n\n", magDig, magAn);
             printf("Tilt: %d\n\n\n", tilt);
             printf("Sound: %d\n\n\n", sound);
