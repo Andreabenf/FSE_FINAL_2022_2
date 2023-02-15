@@ -7,6 +7,13 @@ Repositório para documentação do trabalho final da disciplina de Fundamentos 
 O objetivo deste trabalho é criar sensores e atuadores distribuídos baseados nos microcontroladores ESP32 interconectados via Wifi através do protocolo MQTT, podendo ser aplicada em diversos contextos de automação a exemplo das áreas de Automação Residencial, Predial ou Industrial.
 Os microcontroladores ESP32 irão controlar a aquisição de dados de sensores, botões e chaves e acionar saídas como leds, dentre outras. Haverão dois modos de operação dos dispositivos: modo energia que representa o dispositivo ligado à tomada e modo bateria que representa o dispositivo que deverá operar em modo de baixo consumo.
 
+## Vídeo de apresentação 
+https://youtu.be/frOsKpH8AAY
+
+## Link Dashboard
+http://164.41.98.25:443/dashboards/63287f50-a42f-11ed-8436-09bf763c9306
+
+
 ## Integrantes
 
 **Nome** | **Matricula** | **GitHub** 
@@ -56,8 +63,7 @@ obs : Nesse passo o nome do dispositivo após o /dev/ pode variar
 
 | Requisito | Feito ? | Como fazer |
 | -------- | -------- | -------- |
-| 
-Dashboard criado representando a telemetria e estados dos atributos.    |  Sim    | Feito   |
+| Dashboard criado representando a telemetria e estados dos atributos.    |  Sim    | Feito   |
 | Mecanismo RPC para acionamento remoto de atributos dos dispositivos distribuídos. | Sim | Feito|
 | Correto acionamento e envio do estado da saída de acordo com os comandos RPC do Dashboard (incluíndo o acionamento em modo PWM). | Sim | Feito|
 |  Correta detecção e envio do estado da entrada ao servidor central. | Sim | Feito |
