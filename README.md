@@ -12,6 +12,7 @@ https://youtu.be/frOsKpH8AAY
 
 ## Link Dashboard
 http://164.41.98.25:443/dashboards/63287f50-a42f-11ed-8436-09bf763c9306
+<img width="1437" alt="Captura de Tela 2023-02-14 às 21 31 10" src="https://user-images.githubusercontent.com/40725728/218894466-5c482d96-838c-4abd-8a2d-023449691c41.png">
 
 
 ## Integrantes
@@ -37,17 +38,23 @@ Para execução do projeto para seguir esses passos :
 ```
 git clone https://github.com/Andreabenf/FSE_2022_2_TRAB2
 ```
+- Realize o download do IDF e coloque ele na raiz do seu projeto
+link esp-idf: https://drive.google.com/drive/folders/1sSgixs9aZkyl3wJ67GTF0wxB3VakxNuD?usp=sharing
 
 - Entre na pasta raiz do projeto
 ```
-cd FSE_2022_2_TRAB2
+cd FSE_2022_2_TRAB2/client
 ```
 - Exporte, configure e builde a biblioteca idf
 ```
+
 . ../esp-idf/export.sh
 idf.py menuconfig
 idf.py build fullclean
 ```
+<img width="1059" alt="Captura de Tela 2023-02-14 às 21 22 10" src="https://user-images.githubusercontent.com/40725728/218893551-88d48583-d55f-45be-bb45-334fcc555681.png">
+<img width="1059" alt="Captura de Tela 2023-02-14 às 21 22 16" src="https://user-images.githubusercontent.com/40725728/218893559-d5a5051b-15c9-49fb-97f7-cf739bfa610e.png">
+<img width="1059" alt="Captura de Tela 2023-02-14 às 21 22 23" src="https://user-images.githubusercontent.com/40725728/218893566-77e47c24-9e5e-414a-8190-aee0b1a0d2b0.png">
 
 - Para transpor o código para placa execute 
 ```
