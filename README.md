@@ -1,3 +1,4 @@
+
 # FSE_FINAL_2022_2
 
 Repositório para documentação do trabalho final da disciplina de Fundamentos de Sistemas Embarcados.
@@ -52,6 +53,22 @@ cd FSE_2022_2_TRAB2/client
 idf.py menuconfig
 idf.py build fullclean
 ```
+
+No menu, entre nas configuraçes de Serial flasher
+
+![image](https://user-images.githubusercontent.com/32902438/219026849-05e4bd2c-260b-42b7-812f-a35a2b803da7.png)
+
+e mude o flash size para 4mb:
+
+![image](https://user-images.githubusercontent.com/32902438/219026946-19ae9653-eefe-4502-b4a0-d80813caad68.png)
+
+No partition table, retire o 's' de partititons e deixe partition.csv
+
+![image](https://user-images.githubusercontent.com/32902438/219027008-5e0f028b-9977-4a0f-a93d-e20192bf0737.png)
+
+
+Agora, configure sua placa e wifi:
+![image](https://user-images.githubusercontent.com/32902438/219027085-f4c41e59-eed4-4c1a-ac0e-b2e75edb8316.png)
 <img width="1059" alt="Captura de Tela 2023-02-14 às 21 22 10" src="https://user-images.githubusercontent.com/40725728/218893551-88d48583-d55f-45be-bb45-334fcc555681.png">
 <img width="1059" alt="Captura de Tela 2023-02-14 às 21 22 16" src="https://user-images.githubusercontent.com/40725728/218893559-d5a5051b-15c9-49fb-97f7-cf739bfa610e.png">
 <img width="1059" alt="Captura de Tela 2023-02-14 às 21 22 23" src="https://user-images.githubusercontent.com/40725728/218893566-77e47c24-9e5e-414a-8190-aee0b1a0d2b0.png">
